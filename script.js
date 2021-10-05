@@ -35,6 +35,15 @@ function updateDisplay(str) {
   digitDisplay.textContent = str.toString();
 }
 
+function appendDigit(digit) {
+  if(display === '0') {
+    display = digit;
+  } else if(displayLength() < 9) {
+    display += digit;
+  }
+  updateDisplay(display);
+}
+
 digits.forEach((digit) => {
   digit.addEventListener('click', (element) => {
     if(display === '0') {
@@ -73,7 +82,7 @@ decimalButton.addEventListener('click', () => {
 //sections handles the two clear buttons
 const backButton = document.querySelector('.backspace');
 
-backButton.addEventListener('click', () => {
+function backspace() {
   if(display.length > 1) {
     display = display.substring(0, display.length - 1);
     updateDisplay(display);  
@@ -81,20 +90,28 @@ backButton.addEventListener('click', () => {
     display = '0';
     updateDisplay(display);  
   }
-});
+}
+
+backButton.addEventListener('click', () => backspace());
 
 const clearButton = document.querySelector('.clear');
 
-clearButton.addEventListener('click', () => {
+function clearEverything() {
   display = '0';
   updateDisplay(display);
   operator = undefined;
   numberStore = undefined;
   evaluated = false;
-});
+}
+
+clearButton.addEventListener('click', () => clearEverything());
 
 //this section handles the operations and actual calculating
 function operate() {
+  if(operator === divide && display === '0') {
+    updateDisplay('nice try');
+    numberStore = undefined;
+  }
   if(numberStore && operator) {
     display = operator(numberStore, +display).toString();
     updateDisplay(display);
@@ -132,3 +149,70 @@ multiplyButton.addEventListener('click', () => operatorUpdate(multiply));
 const divideButton = document.querySelector('.divide');
 
 divideButton.addEventListener('click', () => operatorUpdate(divide));
+
+document.addEventListener('keydown', (element) => {
+  switch(element.key) {
+    case '1':
+      appendDigit('1');
+      break;
+    case '2':
+      appendDigit('2');
+      break;
+    case '3':
+      appendDigit('3');
+      break;
+    case '4':
+      appendDigit('4');
+      break;
+    case '5':
+      appendDigit('5');
+      break;
+    case '6':
+      appendDigit('6');
+      break;
+    case '7':
+      appendDigit('7');
+      break;
+    case '8':
+      appendDigit('8');
+      break;
+    case '9':
+      appendDigit('9');
+      break;
+    case '0':
+      if(display !== '0' && displayLength() < 9) {
+        display += '0';
+        updateDisplay(display);
+      }
+      break;
+    case '+':
+      operatorUpdate(add)
+      break;
+    case '-':
+      operatorUpdate(subtract)
+      break;
+    case '*':
+      operatorUpdate(multiply)
+      break;
+    case '/':
+      operatorUpdate(divide)
+      break;
+    case '.':
+      if(!display.includes('.')) {
+        display += '.';
+        updateDisplay(display);  
+      }
+      break;
+    case '=':
+      operate()
+      break;
+    case 'Backspace':
+      backspace();
+      break;
+    case 'Escape':
+      clearEverything76();
+      break;
+    default:
+      console.log('Oops you broke it.');
+  }
+});
